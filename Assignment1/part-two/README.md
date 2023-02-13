@@ -10,6 +10,12 @@ new results. The filenames can be changed in the run method of bigram.py to use
 different text files if needed. Though the desired output is produced by running
 the script with no changes.
 
+To run the script with different training and test data this can be done on the
+commandline. python bigram.py *<training_filename>* *<test_filename>*. This will
+print each entry in the test file with the corresponding probability. Note that
+only bigrams that appear in the training data can be in the test set as this model
+contains no smoothing as mentioned in the assignment spec.
+
 Folder contents:
 
 + [Bigram model - Python file](bigram.py)
