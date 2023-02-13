@@ -3,10 +3,11 @@ import re
 import sys
 
 
-# This script makes use of the io, re and sys libraries in Python. The io library is used to read in the file in utf-8 format
-# to correctly load characters. The re library is used to find the occurrences of periods, quotation marks and
-# exclamation marks that are not the end of a sentence. This allows for the text to then be split into the constituent
-# sentences. The sys module is used to read in command line arguments as an option of running the script
+# This script makes use of the io, re and sys libraries in Python. The io library is used to read in the file in
+# utf-8 format to correctly load characters. The re library is used to find the occurrences of periods,
+# quotation marks and exclamation marks that are not the end of a sentence. This allows for the text to then be split
+# into the constituent sentences. The sys module is used to read in command line arguments as an option of running
+# the script
 
 def main(filename):
     """
@@ -84,10 +85,9 @@ def split_sentences(text):
 
 
 if __name__ == "__main__":
-    filename = ""  # Filename goes here
+    filename = "input.txt"  # Filename goes here
 
-    if filename == "":
+    if len(sys.argv) > 1:
         filename = sys.argv[1]
-        print(filename)
 
     main(filename)
