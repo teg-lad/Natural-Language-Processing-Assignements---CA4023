@@ -1,15 +1,8 @@
 import math
+import sys
 
 
-# 2 Questions:
-
-# 1. Are the sentence start and end to be included? i.e. info about the position of the first and last word.
-# This will pull the probability down but will include more context i.e. P(c|<s>) = P(<s>, c) / P(<s>)
-
-# 2. Is the training data sentences? inclined to think this as <s> and </s> but the last element in each is the first in
-# the next so possibly bigrams?
-
-def run():
+def run(train_file, test_file):
     """
     This function is the main function of the script. It reads in the train and test data. Initializes the BigramModel
     class and calls its train method, computing the counts for the training corpus. The test data is then passed one
@@ -17,7 +10,7 @@ def run():
     :return:
     """
     # Read in the data and create a list with each training sentence as an element
-    with open("training.txt") as train:
+    with open(train_file) as train:
         train_data = train.read().split("\n")
 
     # Initialize the BigramModel class which tracks the counts of words and bigrams
@@ -27,7 +20,7 @@ def run():
     model.train(train_data)
 
     # Read in the test data and split it the same way as the train data, on newlines
-    with open("test.txt") as test:
+    with open(test_file) as test:
         test_data = test.read().split("\n")
 
     # For each test sentence, compute and print the probability to stdout
@@ -126,4 +119,11 @@ class BigramModel:
 
 if __name__ == "__main__":
     # Run the script. Reads in training data, trains the model (gets counts). Reads the test data and computes the probs
-    run()
+    train_file = "training.txt"
+    test_file = "test.txt"
+
+    if len(sys.argv) > 1:
+        train_file = sys.argv[1]
+        test_file = sys.argv[2]
+
+    run(train_file, test_file)
