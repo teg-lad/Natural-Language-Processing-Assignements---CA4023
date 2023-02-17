@@ -6,24 +6,32 @@ NaiveBayes classifier. The NaiveBayes classifier is first trained on the trainin
 corpus, this involves getting the counts of words and documents of each sentiment. 
 With these counts the probability of the class and a word given a class can be
 computed. Add-alpha smoothing is used to introduce low probabilities for words
-that don't occur in one of the classes. The format of the training data is set
-out in main. The files for training are read in, inserted as values into a
-dictionary with the key as the class. This means NaiveBayes accepts as dictionary
-in the form training_data = {"positive": pos_train, "negative": neg_train}.
+that don't occur in one of the classes.
+
+The data is read in from a folder structure by the return_files function. This
+takes a path to a directory and takes all the subdirectories to be classes with
+the related files listed. This returns a dictionary with {"classname": [list of files]}.
+The training, test and test_with_gt folders are available in the repo. training 
+contains the class labels as subdirectories, as does test_with_gt. Test contains
+a subdirectory that does not match the classes from the training set, so only
+predictions can be made.
 
 Once the model is trained, we are ready to make predictions. The test function
-accepts 2 types of input. The test data in the same form as the training data, 
-with the class labels as keys. The NaiveBayes will use the class labels provided
-to determine the accuracy of each class and overall. Otherwise, with no class
-labels, the model just predicts for each instance of a file in the dictionary.
-Even if they are split amongst different items in the dictionary.
+accepts 2 forms of input. If the test data contains class labels as keys then we
+can compute the accuracy of all classes and the total accuracy. If the data dictionary
+keys do not match the class labels from training then we can only predict for each
+example in the test set.
 
-Changes can be made to the main function to introduce these changes, and change
-the value of alpha for smoothing.
+Changes can be made in the main function to adjust the alpha value for smoothing and
+the program can be called from the command line with the training directory and test
+directory passed as arguments. e.g. python naive_bayes <training_dir> <test_dir>
 
 Folder contents:
 
-+ [Naive Bayes - Python file](naive_bayes.py)
++ [Naive Bayes - Python file](naive_bayes.py) - python file for my NaiveBayes implementation.
 + [Review Polarity Folder](review_polarity) - Raw data for training and evaluating
++ [Training Folder](training) - Contains the class labels as subdirectories which contain the training examples of that class.
++ [Test Folder](test) - Folder with all test samples together, allowing for prediction only
++ [Test with Ground Truth](test_with_gt) - Folder with test samples split by class, allowing for accuracy to be computed.
 + [Results](results) - Evaluation results, includes accuracy, correct and incorrect predictions
 + [Predictions](prediction) - Prediction results only when no class labels are passed.

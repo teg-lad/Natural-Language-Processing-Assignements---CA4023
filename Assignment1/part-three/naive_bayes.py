@@ -1,11 +1,12 @@
 import json
 import math
+import sys
 from pathlib import Path
 import string
 import shutil
 
 
-def main():
+def main(training_dir, test_dir):
     """
     This is the main function that runs when the script is run. It reads in the data and splits it into train and test.
     The NaiveBayes class is initialized and passed the classes and alpha value.
@@ -15,28 +16,22 @@ def main():
     allowing for analysis.
     """
 
-    # The classes we wish to use, can be changed to use the naive bayes for other classification tasks.
-    sentiment_classes = ["positive", "negative"]
+    # Compile a dictionary with the training data, the keys are the class names and the elements in the list are files.
+    training_data = return_files(training_dir)
 
-    # Split the data into the train and test for the 2 classes.
-    pos_train, pos_test, neg_train, neg_test = split_and_return_files(900)
-
-    # Create a dictionary with the training data and testing data as the values with the classes as the keys.
-    training_data = {"positive": pos_train, "negative": neg_train}
-    testing_data = {"positive": pos_test, "negative": neg_test}
-
-    # The alternative is to pass the training data as a list with ground truth labels
-    # testing_data = {"test": pos_test + neg_test}
+    # Compile a dictionary with the test data, the keys are either the subfolder names, which may be class names,
+    # or just a list of files under the key "files".
+    testing_data = return_files(test_dir)
 
     # Initialize the NaiveBayes class with the class list and an alpha value of 0.9 for smoothing.
-    model = NaiveBayes(sentiment_classes, 0.9)
+    model = NaiveBayes(training_data.keys(), 0.9)
 
     # Train the model by passing the training dictionary, this computes the probabilities from the counts of words and
     # documents.
     model.train(training_data)
 
     # Pass the test dictionary to the model. If the keys match the classes we return the accuracy and results
-    # folder, otherwise return the predictions in the predictions folder.
+    # folder, otherwise return the predictions in the predictions' folder.
     model.test(testing_data)
 
 
@@ -69,7 +64,7 @@ class NaiveBayes:
         if alpha:
             self.alpha = alpha
 
-        # Total words for each class, probabilites of classes and words in each class.
+        # Total words for each class, probabilities of classes and words in each class.
         self.total_words = {}
         self.class_probabilities = {}
         self.probabilities = {}
@@ -112,7 +107,7 @@ class NaiveBayes:
         evaluation = False
 
         # If the classes are keys in the file_dictionary we can:
-        if self.classes == list(file_dict.keys()):
+        if self.classes == file_dict.keys():
             evaluation = True
 
             # Keep track of the classifications we get correct for each class
@@ -177,7 +172,6 @@ class NaiveBayes:
 
                     # For each item in the dictionary
                     for k, v in file_dict.items():
-
                         # The accuracy of the item with key k is the correct for that key / number of files in that
                         # item.
                         cls_accuracy = f"The accuracy for {k} is {correct[k] / len(v)}"
@@ -317,31 +311,37 @@ class NaiveBayes:
         return max(probabilities, key=probabilities.get)
 
 
-def split_and_return_files(index: int):
+def return_files(dir: Path):
     """
-    Splits the files in the positive and negative folder and returns the files before the index as train and the files
-    after for test.
-    :param index: The index at which to split the files, using < and >=
-    :return: pos_train, pos_test, neg_train, neg_test
+    Iterates through the data folder, taking the subdirectories as the class labels. If subfolders are available but do
+    not match the class labels from the training data the model will make predictions only.
+    :param dir: Path object for the directory that contains data.
+    :return: data
     """
 
-    # Create the base path
-    base_path = Path.cwd() / "review_polarity" / "txt_sentoken"
+    # Dictionary to store the data
+    data = {}
 
-    # Create both the positive and negative paths
-    pos = base_path / "pos"
-    neg = base_path / "neg"
+    # For every sub-directory
+    for cls in Path(dir).iterdir():
+        cls_files = []
 
-    # Create a list with the Path objects for the files before the index for the positive folder
-    pos_train = [file for file in pos.iterdir() if int(file.name[2:5]) < index]
-    pos_test = [file for file in pos.iterdir() if int(file.name[2:5]) >= index]
+        # Add every file in the subdirectory to a list.
+        for file in cls.iterdir():
+            cls_files.append(file)
 
-    # Create a list with the Path objects for the files before the index for the negative folder
-    neg_train = [file for file in neg.iterdir() if int(file.name[2:5]) < index]
-    neg_test = [file for file in neg.iterdir() if int(file.name[2:5]) >= index]
+        # Insert this list into the dictionary under the subdirectory name.
+        data[cls.name] = cls_files
 
-    return pos_train, pos_test, neg_train, neg_test
+    return data
 
 
 if __name__ == "__main__":
-    main()
+    training_dir = "training"
+    test_dir = "test_with_gt" # This can be changed to the test directory for prediction only.
+
+    if len(sys.argv) > 1: # If we have arguments, we can assign them.
+        training_dir = sys.argv[1]
+        test_dir = sys.argv[2]
+
+    main(training_dir, test_dir)
