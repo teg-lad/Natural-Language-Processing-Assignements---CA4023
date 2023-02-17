@@ -1,5 +1,16 @@
 ## Naive Bayes Sentiment Polarity Classifier
 
+#### Running this script
+
+This script can be run on the commandline by passing the names of folder in the
+current directory as input for training and testing. e.g. python naive_bayes.py <training_dir> <test_dir>.
+Note that the training directory should have a subdirectory for each class with the
+corresponding examples in the folder for that class. The test directory should follow
+the same format if evaluation is desired, if the subdirectories do not match the class
+labels only prediction will occur.
+
+#### Script overview
+
 The code in the naive_bayes Python file is split into a main function for
 calling the high-level function, and a NaiveBayes class that implements the
 NaiveBayes classifier. The NaiveBayes classifier is first trained on the training
