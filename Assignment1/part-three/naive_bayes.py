@@ -68,11 +68,13 @@ class NaiveBayes:
         self.total_words = {}
         self.class_probabilities = {}
         self.probabilities = {}
+        self.log_probabilities = {}
 
         # For every class, add a dictionary in the counts and probabilities. Initialize the doc count for a class at 0.
         for cls in self.classes:
             self.counts[cls] = {}
             self.probabilities[cls] = {}
+            self.log_probabilities[cls] = {}
             self.doc_count[cls] = 0
 
     def train(self, file_dict: dict):
@@ -273,9 +275,10 @@ class NaiveBayes:
                     word_count = 0
 
                 # Determine the probability of this word given this class using the counts and considering the alpha.
+                self.probabilities[cls][word] = (word_count + self.alpha) / (self.total_words[cls] + (self.alpha * total_unique_words))
+
                 # The log of this is taken, so we can sum the probabilities to find the total for a class.
-                self.probabilities[cls][word] = math.log(
-                    (word_count + self.alpha) / (self.total_words[cls] + (self.alpha * total_unique_words)))
+                self.log_probabilities[cls][word] = math.log(self.probabilities[cls][word])
 
     def predict_class(self, doc: str):
         """
@@ -301,7 +304,7 @@ class NaiveBayes:
 
                 # If we have seen the word before, we will add the probability to the list for this class.
                 if word in self.unique:
-                    probabilities[cls].append(self.probabilities[cls][word])
+                    probabilities[cls].append(self.log_probabilities[cls][word])
 
             # The probability of this class is the sum of the log probabilities in the list.
             cls_prob = sum(probabilities[cls])
@@ -322,7 +325,7 @@ def return_files(dir: Path):
     # Dictionary to store the data
     data = {}
 
-    # For every sub-directory
+    # For every subdirectory
     for cls in Path(dir).iterdir():
         cls_files = []
 
