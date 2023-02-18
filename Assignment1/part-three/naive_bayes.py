@@ -69,6 +69,7 @@ class NaiveBayes:
         self.class_probabilities = {}
         self.probabilities = {}
         self.log_probabilities = {}
+        self.class_probabilities_for_prediction = {}
 
         # For every class, add a dictionary in the counts and probabilities. Initialize the doc count for a class at 0.
         for cls in self.classes:
@@ -136,7 +137,11 @@ class NaiveBayes:
                     data = f.read()
 
                 # Our predicted class is returned from the predict_class function
-                predicted = self.predict_class(data)
+                predicted, probabilities = self.predict_class(data)
+
+                # Add the probabilities form each class to a dictionary under the filename, so we can compare them
+                # during analysis.
+                self.class_probabilities_for_prediction[file.name] = probabilities
 
                 # If we are evaluating, see if the class label matches the predicted. (k is the ground truth key).
                 if evaluation:
@@ -204,6 +209,10 @@ class NaiveBayes:
         # Write the word probabilities for each class to a json for use during analysis.
         with open(output_path / "probabilities.json", "w") as p:
             json.dump(self.probabilities, p)
+
+        # Write probabilities for each individual prediction to a json for use during analysis.
+        with open(output_path / "prediction_probabilities.json", "w") as pp:
+            json.dump(self.class_probabilities_for_prediction, pp)
 
     def increment_count(self, cls: str, word: str):
         """
@@ -306,12 +315,16 @@ class NaiveBayes:
                 if word in self.unique:
                     probabilities[cls].append(self.log_probabilities[cls][word])
 
-            # The probability of this class is the sum of the log probabilities in the list.
+            # The probability of this class given the content is the sum of the log probabilities.
             cls_prob = sum(probabilities[cls])
+
+            # Now, we need to consider the prior, which we need to convert to a log and add to the probability.
+            cls_prob += math.log(self.class_probabilities[cls])
+
             probabilities[cls] = cls_prob
 
-        # Return the class with the higher probability.
-        return max(probabilities, key=probabilities.get)
+        # Return the class with the higher probability and the dictionary with probabilities for both classes.
+        return max(probabilities, key=probabilities.get), probabilities
 
 
 def return_files(dir: Path):
