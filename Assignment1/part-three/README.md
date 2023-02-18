@@ -40,6 +40,7 @@ directory passed as arguments. e.g. python naive_bayes <training_dir> <test_dir>
 Folder contents:
 
 + [Naive Bayes - Python file](naive_bayes.py) - python file for my NaiveBayes implementation.
++ [ANALYSIS.md](ANALYSIS.md) - Analysis markdown file.
 + [Review Polarity Folder](review_polarity) - Raw data for training and evaluating
 + [Training Folder](training) - Contains the class labels as subdirectories which contain the training examples of that class.
 + [Test Folder](test) - Folder with all test samples together, allowing for prediction only
