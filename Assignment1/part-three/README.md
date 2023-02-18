@@ -46,3 +46,5 @@ Folder contents:
 + [Test with Ground Truth](test_with_gt) - Folder with test samples split by class, allowing for accuracy to be computed.
 + [Results](results) - Evaluation results, includes accuracy, correct and incorrect predictions
 + [Predictions](prediction) - Prediction results only when no class labels are passed.
++ [Analysis Reviews](analysis_reviews) - Folder containing the reviews used during the analysis.
++ [Images](images) - Snippets of the reviews from the analysis for use in ANALYSIS.md.
