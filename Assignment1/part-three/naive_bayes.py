@@ -1,12 +1,13 @@
 import json
 import math
 import sys
+import io
 from pathlib import Path
 import string
 import shutil
 
 
-def main(training_dir, test_dir):
+def main(training_dir, test_path):
     """
     This is the main function that runs when the script is run. It reads in the data and splits it into train and test.
     The NaiveBayes class is initialized and passed the classes and alpha value.
@@ -18,6 +19,14 @@ def main(training_dir, test_dir):
 
     # Compile a dictionary with the training data, the keys are the class names and the elements in the list are files.
     training_data = return_files(training_dir)
+
+    # We need to check if the test_path is a .txt file and if so pull out the reviews that we want.
+    if test_path[-4:] == ".txt":
+        test_dir = create_folder(test_path)
+
+    # If it isn't, we can treat it as normal.
+    else:
+        test_dir = test_path
 
     # Compile a dictionary with the test data, the keys are either the subfolder names, which may be class names,
     # or just a list of files under the key "files".
@@ -327,6 +336,36 @@ class NaiveBayes:
         return max(probabilities, key=probabilities.get), probabilities
 
 
+def create_folder(text_file):
+    """
+    This function takes a text file with a new review on each line and converts it to a folder with a subfolder called
+    data that has the reviews in separate text files. This allows for the .txt file format to be changed to the format
+    currently accepted by the model.
+    :param text_file: The name of the text file in the current working directory
+    :return: The folder created
+    """
+
+    # Create a path for the text file and the output folder.
+    text_path = Path.cwd() / text_file
+    output_folder = text_path.parent / text_path.name[:-4] / "data"
+
+    # Make a directory for the files to be written to.
+    output_folder.mkdir(parents=True, exist_ok=True)
+
+    # Open the text file and read the data, splitting on new lines.
+    # This will result in a list of reviews.
+    with io.open(text_path, mode="r", encoding="utf-8") as t:
+        data = t.read().split("\n")
+
+    # Iterate through the reviews and write them to a file in the new folder.
+    for i in range(len(data)):
+        with open((output_folder / f"{i}.txt"), "w") as tmp:
+            tmp.write(data[i])
+
+    # Return the path to the new folder, which is the parent of the data folder.
+    return output_folder.parent
+
+
 def return_files(dir: Path):
     """
     Iterates through the data folder, taking the subdirectories as the class labels. If subfolders are available but do
@@ -354,7 +393,8 @@ def return_files(dir: Path):
 
 if __name__ == "__main__":
     training_dir = "training"
-    test_dir = "test_with_gt" # This can be changed to the test directory for prediction only.
+    test_dir = "test_with_gt" # This can be changed to the test directory for prediction only or a txt file to pass
+    # reviews to be classified.
 
     if len(sys.argv) > 1: # If we have arguments, we can assign them.
         training_dir = sys.argv[1]

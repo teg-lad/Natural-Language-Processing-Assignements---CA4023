@@ -7,7 +7,15 @@ current directory as input for training and testing. e.g. python naive_bayes.py 
 Note that the training directory should have a subdirectory for each class with the
 corresponding examples in the folder for that class. The test directory should follow
 the same format if evaluation is desired, if the subdirectories do not match the class
-labels only prediction will occur.
+labels only prediction will occur. 
+
+NOTE: The script has been changed to accommodate .txt file input. These can be input in place of the
+test dir above. python naive_bayes.py <training_dir> <test_dir/test.txt>. The text file is expected to
+have a review on each line so that splitting on \n character returns a list of reviews. The reviews
+from the .txt file are converted into singular reviews and stored in a folder format as previously was
+accepted. The predictions are written to the prediction folder as before.
+
+
 
 #### Script overview
 
@@ -45,6 +53,8 @@ Folder contents:
 + [Training Folder](training) - Contains the class labels as subdirectories which contain the training examples of that class.
 + [Test Folder](test) - Folder with all test samples together, allowing for prediction only
 + [Test with Ground Truth](test_with_gt) - Folder with test samples split by class, allowing for accuracy to be computed.
++ [Sample Text](sample.txt) - Text file containing a review on each line for classification.
++ [Sample](sample) - Folder containing the sample.txt data in the format for the model.
 + [Results](results) - Evaluation results, includes accuracy, correct and incorrect predictions
 + [Predictions](prediction) - Prediction results only when no class labels are passed.
 + [Analysis Reviews](analysis_reviews) - Folder containing the reviews used during the analysis.
